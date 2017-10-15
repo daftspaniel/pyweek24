@@ -18,6 +18,7 @@ class Rescueboat(arcade.Sprite):
         self.waterdrag = 0.05
         self.obstacles = []
         self.trail = []
+        self.passenger = False
 
     def update(self):
         self.manageDrag()
@@ -37,24 +38,39 @@ class Rescueboat(arcade.Sprite):
 
         self.center_x += self.change_x
         self.center_y += self.change_y
-        #
-        # if arcade.geometry.check_for_collision(self, self.wall):
-        #     self.center_x = x
-        #     self.center_y = y
-        #     self.change_x = 0
-        #     self.change_y = 0
-        #
+
+        for obstacle in self.obstacles:
+            if arcade.geometry.check_for_collision(self, obstacle):
+                self.center_x = x
+                self.center_y = y
+                self.change_x = 0
+                self.change_y = 0
+                break
+
         # Wrap round screen
         self.center_x = self.center_x % GAME_WIDTH
         self.center_y = self.center_y % GAME_HEIGHT
 
+        self.updateTrail()
+        self.checkIfBackHome()
+
+        super().update()
+
+    def checkIfBackHome(self):
+        home = arcade.check_for_collision(self, self.home)
+        if self.passenger and home:
+            self.passenger = False
+
+    def updateTrail(self):
         if len(self.trail) < 42 and RND(2) == 1:
             self.trail.append([self.center_x + RND(3), self.center_y + RND(3)])
             self.trail.append([self.center_x - RND(3), self.center_y - RND(3)])
         if len(self.trail) > 41:
             self.trail.pop(0)
 
-        super().update()
+    def drawTrail(self):
+        for point in self.trail:
+            arcade.draw_circle_outline(point[0], point[1], 2, arcade.color.WHITE, 1)
 
     def manageDrag(self):
         if self.speed > 0:

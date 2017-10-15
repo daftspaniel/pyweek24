@@ -4,12 +4,13 @@ from game.constants import GAME_WIDTH, GAME_HEIGHT
 from game.util import RND
 
 
-class Log(arcade.Sprite):
+class Survivor(arcade.Sprite):
     def __init__(self, filename, scale):
         super().__init__(filename, scale)
-        self.angle = RND(360)
-        self.turn = True
+        self.angle = 0
+        self.turn = False
         self.wobble = True
+        self.speed = RND(3)
 
     def update(self):
         if self.turn and RND(20) == 1:

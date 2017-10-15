@@ -8,9 +8,11 @@ from game.util import imagePath
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(GAME_WIDTH, GAME_HEIGHT)
+        arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
         self.levels = Levels()
         self.setupSprites()
-        arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
+        self.player.obstacles = self.levels.logs
+        self.player.home = self.levels.home
 
     def setupSprites(self):
         self.player = Rescueboat(imagePath('boat.png'), 2)
@@ -36,14 +38,18 @@ class Game(arcade.Window):
     def on_draw(self):
         arcade.start_render()
 
-        for point in self.player.trail:
-            arcade.draw_circle_outline(point[0], point[1], 2, arcade.color.WHITE, 1)
+        self.player.drawTrail()
 
-        drawHome()
+        drawHome(self.player.passenger)
 
         self.boats.draw()
         self.levels.draw()
 
     def update(self, x):
+        rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
+        if len(rescues) > 0:
+            for rescue in rescues:
+                rescue.kill()
+                self.player.passenger = True
         self.levels.update()
         self.boats.update()
