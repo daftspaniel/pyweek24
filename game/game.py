@@ -11,13 +11,16 @@ class Game(arcade.Window):
         arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
         self.levels = Levels()
         self.setupSprites()
-        self.player.obstacles = self.levels.logs
-        self.player.home = self.levels.home
 
     def setupSprites(self):
         self.player = Rescueboat(imagePath('boat.png'), 2)
         self.boats = arcade.SpriteList()
         self.boats.append(self.player)
+
+        self.player.obstacles = self.levels.logs
+        self.player.home = self.levels.home
+        self.player.center_x = self.levels.homePos[0]
+        self.player.center_y = self.levels.homePos[1]
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.LEFT:
@@ -51,5 +54,6 @@ class Game(arcade.Window):
             for rescue in rescues:
                 rescue.kill()
                 self.player.passenger = True
+        if len(self.levels.pickups) == 0: self.levels.addSurvivor()
         self.levels.update()
         self.boats.update()
