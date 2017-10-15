@@ -3,6 +3,8 @@ import os
 
 from game.constants import *
 from game.player import Rescueboat
+from game.util import RND
+
 
 class Game(arcade.Window):
     def __init__(self):
@@ -37,8 +39,15 @@ class Game(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+
+        for point in self.player.trail:
+            arcade.draw_circle_outline(point[0], point[1], 2, arcade.color.WHITE, 1)
+
         arcade.draw_circle_filled(50, 100, 45,
-                                  arcade.color.ALLOY_ORANGE)
+                                  arcade.color.BLANCHED_ALMOND)
+        arcade.draw_circle_outline(50, 100, 45, arcade.color.RED, 10)
+        arcade.draw_circle_outline(50, 100, 25, arcade.color.RED, 10)
+
         self.boats.draw()
 
     def update(self, x):
