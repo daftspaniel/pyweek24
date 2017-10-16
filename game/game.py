@@ -7,8 +7,9 @@ from game.util import imagePath
 
 class Game(arcade.Window):
     def __init__(self):
-        super().__init__(GAME_WIDTH, GAME_HEIGHT)
+        super().__init__(WINDOW_WIDTH, GAME_HEIGHT)
         arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
+
         self.levels = Levels()
         self.setupSprites()
 
@@ -42,18 +43,28 @@ class Game(arcade.Window):
         arcade.start_render()
 
         self.player.drawTrail()
+        self.levels.draw()
 
         drawHome(self.player.passenger)
-
         self.boats.draw()
-        self.levels.draw()
+        self.drawStatus()
+
+    def drawStatus(self):
+
+        arcade.draw_rectangle_filled(GAME_WIDTH + HALF_STATUS_AREA,
+                                     HALF_GAME_HEIGHT, WINDOW_WIDTH - GAME_WIDTH,
+                                     GAME_HEIGHT, arcade.color.YELLOW)
+        arcade.draw_text("Score : " + str(self.player.score),
+                         GAME_WIDTH + STATUS_MARGIN, 350, arcade.color.BLACK_BEAN, 10)
 
     def update(self, x):
         rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
         if len(rescues) > 0:
             for rescue in rescues:
                 rescue.kill()
+                self.player.score += 100
                 self.player.passenger = True
-        if len(self.levels.pickups) == 0: self.levels.addSurvivor()
+        if len(self.levels.pickups) == 0 and self.player.passenger == False:
+            self.levels.addSurvivor()
         self.levels.update()
         self.boats.update()
