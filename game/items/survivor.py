@@ -1,7 +1,6 @@
 import arcade
-
-from game.constants import GAME_WIDTH, GAME_HEIGHT
-from game.util import RND
+from game.common.constants import GAME_WIDTH, GAME_HEIGHT
+from game.common.util import RND
 
 
 class Survivor(arcade.Sprite):

@@ -1,19 +1,12 @@
 import math
-
 import arcade
-
-from game.constants import *
-from game.util import keepWithinRange, RND
+from game.common.constants import *
+from game.common.util import keepWithinRange, RND
 
 
 class Rescueboat(arcade.Sprite):
     def __init__(self, filename, scale):
         super().__init__(filename, scale)
-        self.center_x = 222
-        self.center_y = 333
-        self.angle = 0
-        self.thrust = 0
-        self.speed = 0
         self.top_speed = 3
         self.waterdrag = 0.05
         self.obstacles = []
@@ -21,6 +14,7 @@ class Rescueboat(arcade.Sprite):
         self.passenger = False
 
         self.score = 0
+        self.reset()
 
     def update(self):
         self.manageDrag()
@@ -66,10 +60,10 @@ class Rescueboat(arcade.Sprite):
         return arcade.check_for_collision(self, self.home)
 
     def updateTrail(self):
-        if len(self.trail) < 42 and RND(2) == 1:
+        if len(self.trail) < 22 and RND(2) == 1:
             self.trail.append([self.center_x + RND(3), self.center_y + RND(3)])
-            self.trail.append([self.center_x - RND(3), self.center_y - RND(3)])
-        if len(self.trail) > 41:
+            self.trail.append([self.center_x + RND(3), self.center_y + RND(3)])
+        if len(self.trail) > 21:
             self.trail.pop(0)
 
     def drawTrail(self):
@@ -85,3 +79,8 @@ class Rescueboat(arcade.Sprite):
             self.speed += self.waterdrag
             if self.speed > 0:
                 self.speed = 0
+
+    def reset(self):
+        self.angle = 0
+        self.thrust = 0
+        self.speed = 0

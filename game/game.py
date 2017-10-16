@@ -1,8 +1,9 @@
-from game.constants import *
+from game.common.constants import *
+
+from game.common.util import imagePath, RND
 from game.draw.location import *
+from game.items.player import Rescueboat
 from game.levels.levels import Levels
-from game.player import Rescueboat
-from game.util import imagePath
 
 
 class Game(arcade.Window):
@@ -20,8 +21,12 @@ class Game(arcade.Window):
 
         self.player.obstacles = self.levels.logs
         self.player.home = self.levels.home
+        self.setPlayerHome()
+
+    def setPlayerHome(self):
         self.player.center_x = self.levels.homePos[0]
         self.player.center_y = self.levels.homePos[1]
+        self.player.reset()
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.LEFT:
@@ -32,6 +37,13 @@ class Game(arcade.Window):
             self.player.thrust = 0.15
         elif symbol == arcade.key.DOWN:
             self.player.thrust = -.2
+        elif symbol == arcade.key.H:
+            self.setPlayerHome()
+        elif symbol == arcade.key.J:
+            if RND(2)==1:
+                self.player.center_x += 3 + RND(3)
+            else:
+                self.player.center_y += 3 + RND(3)
 
     def on_key_release(self, symbol, modifiers):
         if symbol == arcade.key.LEFT or symbol == arcade.key.RIGHT:
@@ -59,6 +71,13 @@ class Game(arcade.Window):
 
     def update(self, x):
         rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
+
+        for shark in self.levels.sharks:
+            kills = arcade.check_for_collision_with_list(shark, self.levels.pickups)
+            for kill in kills:
+                print('oh no!')
+                kill.kill()
+
         if len(rescues) > 0:
             for rescue in rescues:
                 rescue.kill()
@@ -66,5 +85,6 @@ class Game(arcade.Window):
                 self.player.passenger = True
         if len(self.levels.pickups) == 0 and self.player.passenger == False:
             self.levels.addSurvivor()
+
         self.levels.update()
         self.boats.update()

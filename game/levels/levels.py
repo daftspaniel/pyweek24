@@ -1,9 +1,9 @@
 import arcade
 
-from game.items.survivor import Survivor
-from game.util import imagePath, RND
-
+from game.common.util import imagePath, RND
 from game.items.log import Log
+from game.items.shark import Shark
+from game.items.survivor import Survivor
 
 
 class Levels(object):
@@ -13,6 +13,7 @@ class Levels(object):
 
     def setupSprites(self):
         self.logs = arcade.SpriteList()
+        self.sharks = arcade.SpriteList()
         self.pickups = arcade.SpriteList()
         self.locations = arcade.SpriteList()
         self.buildLevel()
@@ -27,6 +28,13 @@ class Levels(object):
         self.createCrate(500, 210, 2)
         self.createCrate(20, 410, 3)
         self.createCrate(345, 550, 7)
+        self.createShark(444, 444, 1)
+        self.createShark(544, 144, 1.1)
+        self.createShark(644, 44, 1.2)
+        self.addSurvivor()
+        self.addSurvivor()
+        self.addSurvivor()
+        self.addSurvivor()
 
     def addSurvivor(self):
         self.survivor = Survivor(imagePath('person.png'), 0.3)
@@ -52,6 +60,12 @@ class Levels(object):
         log.center_y = y
         self.logs.append(log)
 
+    def createShark(self, x, y, scale):
+        log = Shark(imagePath('shark.png'), scale)
+        log.center_x = x
+        log.center_y = y
+        self.sharks.append(log)
+
     def createGirder(self, x, y, scale):
         log = Log(imagePath('girder.png'), scale)
         log.center_x = x
@@ -62,7 +76,9 @@ class Levels(object):
     def update(self):
         self.logs.update()
         self.pickups.update()
+        self.sharks.update()
 
     def draw(self):
         self.logs.draw()
         self.pickups.draw()
+        self.sharks.draw()
