@@ -13,7 +13,16 @@ class Rescueboat(arcade.Sprite):
         self.trail = []
         self.passenger = False
 
+        self.alive = True
         self.score = 0
+        self.boats = 3
+        self.reset()
+
+    def handleDeadlyCollision(self):
+        if not self.alive: return
+        self.alive = False
+        self.boats -= 1
+        self.passenger = False
         self.reset()
 
     def update(self):
@@ -28,6 +37,7 @@ class Rescueboat(arcade.Sprite):
             if len(self.trail) > 0 and RND(4) == 1: self.trail.pop(0)
             return
 
+        self.alive = True
         home = self.checkIfBackHome()
         x = self.center_x
         y = self.center_y
@@ -84,3 +94,4 @@ class Rescueboat(arcade.Sprite):
         self.angle = 0
         self.thrust = 0
         self.speed = 0
+        self.trail = []

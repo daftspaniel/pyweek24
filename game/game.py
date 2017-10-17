@@ -9,8 +9,11 @@ from game.levels.levels import Levels
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(WINDOW_WIDTH, GAME_HEIGHT)
-        arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
 
+        self.state = "Title"
+        self.newGame()
+
+    def newGame(self):
         self.levels = Levels()
         self.setupSprites()
 
@@ -29,6 +32,8 @@ class Game(arcade.Window):
         self.player.reset()
 
     def on_key_press(self, symbol, modifiers):
+        if self.state != "Gameplay": return
+
         if symbol == arcade.key.LEFT:
             self.player.change_angle = 3
         elif symbol == arcade.key.RIGHT:
@@ -40,34 +45,55 @@ class Game(arcade.Window):
         elif symbol == arcade.key.H:
             self.setPlayerHome()
         elif symbol == arcade.key.J:
-            if RND(2)==1:
+            if RND(2) == 1:
                 self.player.center_x += 3 + RND(3)
             else:
                 self.player.center_y += 3 + RND(3)
 
     def on_key_release(self, symbol, modifiers):
+
+        if self.state == "GameOver":
+            if symbol == arcade.key.SPACE:
+                arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
+                self.state = "Title"
+            return
+        if self.state == "Title":
+            if symbol == arcade.key.SPACE:
+                arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
+                self.state = "Gameplay"
+                self.newGame()
+            return
+
         if symbol == arcade.key.LEFT or symbol == arcade.key.RIGHT:
             self.player.change_angle = 0
         elif symbol == arcade.key.UP or symbol == arcade.key.DOWN:
             self.player.thrust = 0
 
     def on_draw(self):
-        arcade.start_render()
+        if self.state == "Gameplay":
+            arcade.start_render()
 
-        self.player.drawTrail()
-        self.levels.draw()
+            self.player.drawTrail()
+            self.levels.draw()
 
-        drawHome(self.player.passenger)
-        self.boats.draw()
-        self.drawStatus()
+            drawHome(self.player.passenger)
+            self.boats.draw()
+            self.drawStatus()
+        if self.state == "GameOver":
+            drawGameOver()
+        if self.state == "Title":
+            drawTitleScreen()
 
     def drawStatus(self):
 
         arcade.draw_rectangle_filled(GAME_WIDTH + HALF_STATUS_AREA,
                                      HALF_GAME_HEIGHT, WINDOW_WIDTH - GAME_WIDTH,
                                      GAME_HEIGHT, arcade.color.YELLOW)
+        TEXT_MARGIN = GAME_WIDTH + STATUS_MARGIN
         arcade.draw_text("Score : " + str(self.player.score),
-                         GAME_WIDTH + STATUS_MARGIN, 350, arcade.color.BLACK_BEAN, 10)
+                         TEXT_MARGIN, 350, arcade.color.BLACK_BEAN, 10)
+        arcade.draw_text("Boats : " + str(self.player.boats),
+                         TEXT_MARGIN, 380, arcade.color.BLACK_BEAN, 10)
 
     def update(self, x):
         rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
@@ -77,6 +103,10 @@ class Game(arcade.Window):
             for kill in kills:
                 print('oh no!')
                 kill.kill()
+            if arcade.check_for_collision(self.player, shark):
+                self.player.handleDeadlyCollision()
+                self.setPlayerHome()
+                if self.player.boats < 0: self.state = "GameOver"
 
         if len(rescues) > 0:
             for rescue in rescues:
