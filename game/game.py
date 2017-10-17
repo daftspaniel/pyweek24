@@ -18,7 +18,7 @@ class Game(arcade.Window):
         self.setupSprites()
 
     def setupSprites(self):
-        self.player = Rescueboat(imagePath('boat.png'), 2)
+        self.player = Rescueboat(imagePath('boat.png'), 1)
         self.boats = arcade.SpriteList()
         self.boats.append(self.player)
 
@@ -77,7 +77,10 @@ class Game(arcade.Window):
             self.levels.draw()
 
             drawHome(self.player.passenger)
+
             self.boats.draw()
+            self.levels.drawUpper()
+
             self.drawStatus()
         if self.state == "GameOver":
             drawGameOver()
@@ -96,25 +99,35 @@ class Game(arcade.Window):
                          TEXT_MARGIN, 380, arcade.color.BLACK_BEAN, 10)
 
     def update(self, x):
-        rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
 
+        self.checkSharks()
+        self.checkForRescues()
+
+        self.addMoreSurvivors()
+
+        self.levels.update()
+        self.boats.update()
+
+    def addMoreSurvivors(self):
+        if len(self.levels.pickups) < 3 and self.player.passenger == False:
+            self.levels.addSurvivor()
+
+    def checkForRescues(self):
+        if self.player.isBackHome(): return
+        rescues = arcade.check_for_collision_with_list(self.player, self.levels.pickups)
+        if self.player.passenger == False and len(rescues) > 0:
+            for rescue in rescues:
+                rescue.kill()
+                self.player.score += 100
+                self.player.passenger = True
+
+    def checkSharks(self):
         for shark in self.levels.sharks:
             kills = arcade.check_for_collision_with_list(shark, self.levels.pickups)
             for kill in kills:
                 print('oh no!')
                 kill.kill()
-            if arcade.check_for_collision(self.player, shark):
+            if not self.player.isBackHome() and arcade.check_for_collision(self.player, shark):
                 self.player.handleDeadlyCollision()
                 self.setPlayerHome()
                 if self.player.boats < 0: self.state = "GameOver"
-
-        if len(rescues) > 0:
-            for rescue in rescues:
-                rescue.kill()
-                self.player.score += 100
-                self.player.passenger = True
-        if len(self.levels.pickups) == 0 and self.player.passenger == False:
-            self.levels.addSurvivor()
-
-        self.levels.update()
-        self.boats.update()

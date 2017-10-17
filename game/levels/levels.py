@@ -1,6 +1,7 @@
 import arcade
 
 from game.common.util import imagePath, RND
+from game.items.heli import Heli
 from game.items.log import Log
 from game.items.shark import Shark
 from game.items.survivor import Survivor
@@ -16,6 +17,7 @@ class Levels(object):
         self.sharks = arcade.SpriteList()
         self.pickups = arcade.SpriteList()
         self.locations = arcade.SpriteList()
+        self.helecopters = arcade.SpriteList()
         self.buildLevel()
 
     def buildLevel(self):
@@ -35,6 +37,10 @@ class Levels(object):
         self.addSurvivor()
         self.addSurvivor()
         self.addSurvivor()
+        heli = Heli(imagePath('chopper.png'), 1)
+        heli.center_x = 400
+        heli.center_y = -100
+        self.helecopters.append(heli)
 
     def addSurvivor(self):
         self.survivor = Survivor(imagePath('person.png'), 0.3)
@@ -77,8 +83,12 @@ class Levels(object):
         self.logs.update()
         self.pickups.update()
         self.sharks.update()
+        self.helecopters.update()
 
     def draw(self):
+        self.sharks.draw()
         self.logs.draw()
         self.pickups.draw()
-        self.sharks.draw()
+
+    def drawUpper(self):
+        self.helecopters.draw()

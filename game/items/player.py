@@ -38,7 +38,7 @@ class Rescueboat(arcade.Sprite):
             return
 
         self.alive = True
-        home = self.checkIfBackHome()
+        home = self.isBackHome()
         x = self.center_x
         y = self.center_y
 
@@ -66,19 +66,19 @@ class Rescueboat(arcade.Sprite):
 
         super().update()
 
-    def checkIfBackHome(self):
+    def isBackHome(self):
         return arcade.check_for_collision(self, self.home)
 
     def updateTrail(self):
-        if len(self.trail) < 22 and RND(2) == 1:
+        if len(self.trail) < 6 and RND(2) == 1:
             self.trail.append([self.center_x + RND(3), self.center_y + RND(3)])
-            self.trail.append([self.center_x + RND(3), self.center_y + RND(3)])
-        if len(self.trail) > 21:
+        if len(self.trail) > 4:
             self.trail.pop(0)
 
     def drawTrail(self):
         for point in self.trail:
-            arcade.draw_circle_outline(point[0], point[1], 2, arcade.color.WHITE, 1)
+            #arcade.draw_circle(point[0], point[1], 2, arcade.color.WHITE, 1)
+            arcade.draw_circle_filled(point[0]+1, point[1]-1, 2, arcade.color.WHITE)
 
     def manageDrag(self):
         if self.speed > 0:
