@@ -14,6 +14,7 @@ class Levels(object):
 
     def setupSprites(self):
         self.logs = arcade.SpriteList()
+        self.mines = arcade.SpriteList()
         self.sharks = arcade.SpriteList()
         self.pickups = arcade.SpriteList()
         self.locations = arcade.SpriteList()
@@ -65,6 +66,13 @@ class Levels(object):
         log.center_y = y
         self.logs.append(log)
 
+    def createMine(self, x, y):
+        log = Log(imagePath('mine.png'), 1)
+        log.center_x = x
+        log.center_y = y
+        log.turn = False
+        self.mines.append(log)
+
     def createCrate(self, x, y, scale):
         log = Log(imagePath('crate.png'), scale)
         log.center_x = x
@@ -89,11 +97,20 @@ class Levels(object):
         self.pickups.update()
         self.sharks.update()
         self.helecopters.update()
+        self.mines.update()
+        self.addMines()
+
+    def addMines(self):
+        if len(self.mines) > 10: return
+        for heli in self.helecopters:
+            if 200 < heli.center_y < 550 and RND(200) == 1:
+                self.createMine(heli.center_x, heli.center_y)
 
     def draw(self):
         self.sharks.draw()
         self.logs.draw()
         self.pickups.draw()
+        self.mines.draw()
 
     def drawUpper(self):
         self.helecopters.draw()

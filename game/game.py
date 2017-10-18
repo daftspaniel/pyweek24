@@ -34,13 +34,13 @@ class Game(arcade.Window):
     def on_key_press(self, symbol, modifiers):
         if self.state != "Gameplay": return
 
-        if symbol == arcade.key.LEFT:
+        if symbol == arcade.key.A:
             self.player.change_angle = 3
-        elif symbol == arcade.key.RIGHT:
+        elif symbol == arcade.key.D:
             self.player.change_angle = -3
-        elif symbol == arcade.key.UP:
+        elif symbol == arcade.key.W:
             self.player.thrust = 0.15
-        elif symbol == arcade.key.DOWN:
+        elif symbol == arcade.key.S:
             self.player.thrust = -.2
         elif symbol == arcade.key.H:
             self.setPlayerHome()
@@ -64,9 +64,9 @@ class Game(arcade.Window):
                 self.newGame()
             return
 
-        if symbol == arcade.key.LEFT or symbol == arcade.key.RIGHT:
+        if symbol == arcade.key.A or symbol == arcade.key.D:
             self.player.change_angle = 0
-        elif symbol == arcade.key.UP or symbol == arcade.key.DOWN:
+        elif symbol == arcade.key.W or symbol == arcade.key.S:
             self.player.thrust = 0
 
     def on_draw(self):
@@ -102,6 +102,7 @@ class Game(arcade.Window):
     def update(self, x):
 
         self.checkSharks()
+        self.checkMines()
         self.checkForRescues()
 
         self.addMoreSurvivors()
@@ -122,11 +123,18 @@ class Game(arcade.Window):
                 self.player.score += 100
                 self.player.passenger = True
 
+    def checkMines(self):
+        mineHits = arcade.check_for_collision_with_list(self.player, self.levels.mines)
+        for mine in mineHits:
+            mine.kill()
+            self.player.handleDeadlyCollision()
+            self.setPlayerHome()
+            if self.player.boats < 0: self.state = "GameOver"
+
     def checkSharks(self):
         for shark in self.levels.sharks:
             kills = arcade.check_for_collision_with_list(shark, self.levels.pickups)
             for kill in kills:
-                print('oh no!')
                 kill.kill()
             if not self.player.isBackHome() and arcade.check_for_collision(self.player, shark):
                 self.player.handleDeadlyCollision()
