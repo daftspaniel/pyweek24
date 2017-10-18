@@ -18,7 +18,7 @@ class Game(arcade.Window):
         self.setupSprites()
 
     def setupSprites(self):
-        self.player = Rescueboat(imagePath('boat.png'), 1)
+        self.player = Rescueboat(imagePath('boat.png'), imagePath('person.png'), 1)
         self.boats = arcade.SpriteList()
         self.boats.append(self.player)
 
@@ -79,6 +79,7 @@ class Game(arcade.Window):
             drawHome(self.player.passenger)
 
             self.boats.draw()
+            self.boats[0].drawPassenger()
             self.levels.drawUpper()
 
             self.drawStatus()

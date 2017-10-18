@@ -38,6 +38,9 @@ class Levels(object):
         self.addSurvivor()
         self.addSurvivor()
         self.addSurvivor()
+        self.addChopper()
+
+    def addChopper(self):
         heli = Heli(imagePath('chopper.png'), imagePath('blades.png'), 1)
         heli.center_x = 400
         heli.center_y = -100

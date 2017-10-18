@@ -5,7 +5,7 @@ from game.common.util import keepWithinRange, RND
 
 
 class Rescueboat(arcade.Sprite):
-    def __init__(self, filename, scale):
+    def __init__(self, filename, filename2, scale):
         super().__init__(filename, scale)
         self.top_speed = 3
         self.waterdrag = 0.05
@@ -13,10 +13,16 @@ class Rescueboat(arcade.Sprite):
         self.trail = []
         self.passenger = False
 
+        self.person = arcade.load_texture(filename2)
+
         self.alive = True
         self.score = 0
         self.boats = 3
         self.reset()
+
+    def drawPassenger(self):
+        if self.passenger: arcade.draw_texture_rectangle(self.center_x, self.center_y,
+                                                         12, 12, self.person, self.angle)
 
     def handleDeadlyCollision(self):
         if not self.alive: return
@@ -77,8 +83,8 @@ class Rescueboat(arcade.Sprite):
 
     def drawTrail(self):
         for point in self.trail:
-            #arcade.draw_circle(point[0], point[1], 2, arcade.color.WHITE, 1)
-            arcade.draw_circle_filled(point[0]+1, point[1]-1, 2, arcade.color.WHITE)
+            # arcade.draw_circle(point[0], point[1], 2, arcade.color.WHITE, 1)
+            arcade.draw_circle_filled(point[0] + 1, point[1] - 1, 2, arcade.color.WHITE)
 
     def manageDrag(self):
         if self.speed > 0:
