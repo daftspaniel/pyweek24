@@ -18,6 +18,7 @@ class Levels(object):
         self.pickups = arcade.SpriteList()
         self.locations = arcade.SpriteList()
         self.helecopters = arcade.SpriteList()
+        self.rotors = arcade.SpriteList()
         self.buildLevel()
 
     def buildLevel(self):
@@ -37,10 +38,11 @@ class Levels(object):
         self.addSurvivor()
         self.addSurvivor()
         self.addSurvivor()
-        heli = Heli(imagePath('chopper.png'), 1)
+        heli = Heli(imagePath('chopper.png'), imagePath('blades.png'), 1)
         heli.center_x = 400
         heli.center_y = -100
         self.helecopters.append(heli)
+        self.rotors.append(heli.rotor)
 
     def addSurvivor(self):
         self.survivor = Survivor(imagePath('person.png'), 0.3)
@@ -92,3 +94,4 @@ class Levels(object):
 
     def drawUpper(self):
         self.helecopters.draw()
+        self.rotors.draw()
